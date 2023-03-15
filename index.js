@@ -4,14 +4,14 @@ require("@nut-tree/template-matcher");
 screen.config.resourceDirectory = `${__dirname}/assets`;
 
 const maxTune = 3;
-const resolutionX = screen.width();
-const resolutionY = screen.height();
+const getResolutionX = screen.width();
+const getResolutionY = screen.height();
 let controlerAsyncFunc = 0;
 let index = 0;
 
-resolutionX
+getResolutionX
     .then((width) => {
-        resolutionY
+        getResolutionY
             .then((height) => {
                 return { width, height }
                 //OBTENDO A LARGURA E ALTURA DA TELA
