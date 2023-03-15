@@ -130,7 +130,7 @@ resolutionX
                         }
                     }
                 }
-                //A FUNÇÃO congrat CHAMA A FUNÇÃO tuneSucess!
+                
                 function controlMaxTune(index) {
                     if (index < coordinates.itens.length) {
                         tuneSucess(index)
@@ -158,7 +158,7 @@ resolutionX
                         console.error("Erro dentro do programa, contate ao DEV")
                     }
                 }
-                //A FUNÇÃO fail CHAMA A FUNÇÃO tuneFail!
+                
                 function tuneFail(index) {
                     coordinates.itens[index].durability -= 33
                     if (coordinates.itens[index].durability > 1) {
@@ -171,7 +171,7 @@ resolutionX
                     }
 
                 }
-                //A FUNÇÃO tuneFail CHAMA A FUNÇÃO sellItem!
+                
                 async function sellItem(index) {
                     try {
                         await mouse.move([new Point(coordinates.main.sellButton[0], coordinates.main.sellButton[1])])
@@ -185,7 +185,7 @@ resolutionX
                         console.log("Erro na função sellItem contate ao DEV!")
                     }
                 }
-                //A FUNÇÃO sellItem CHAMA A FUNÇÃO buyItem!
+                
                 async function buyItem(index) {
                     coordinates.itens[index].nivel = 1;
                     coordinates.itens[index].durability = 100;
