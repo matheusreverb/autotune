@@ -84,6 +84,8 @@ function tuneSucess(index, coordinates) {
     }
 }
 
+
+
 function tuneFail(index, coordinates) {
     coordinates.itens[index].durability -= 33
     if (coordinates.itens[index].durability > 1) {
