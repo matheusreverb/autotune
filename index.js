@@ -3,11 +3,140 @@ require("@nut-tree/template-matcher");
 
 screen.config.resourceDirectory = `${__dirname}/assets`;
 
+let controlerAsyncFunc = 0;
+let index = 0;
+
+async function tryTuneItem(index, coordinates) {
+    try {
+        await mouse.move([new Point(coordinates.itens[index].coordinateScreen[0], coordinates.itens[index].coordinateScreen[1])])
+        await mouse.click(Button.LEFT)
+        await mouse.move([new Point(coordinates.main.secondTuneButton[0], coordinates.main.secondTuneButton[1])])
+        await mouse.click(Button.LEFT)
+        await sleep(5000)
+        await testCongrat(index, coordinates)
+
+    } catch (e) {
+        console.error("Coordenadas incorretas ou erro no código, contate ao DEV")
+    }
+}
+async function testCongrat(index, coordinates) {
+    try {
+        await screen.find(imageResource("congrat.png"))
+        console.log("Achei a imagem Congratulations")
+        controlerAsyncFunc = 0
+        controlMaxTune(index, coordinates)
+
+    }
+    catch (e) {
+        testFail(index, coordinates)
+    }
+}
+
+async function testFail(index, coordinates) {
+    try {
+        await screen.find(imageResource("fail.png"))
+        console.log("Achei a imagem Fail")
+        controlerAsyncFunc = 0
+        tuneFail(index, coordinates)
+
+    } catch (e) {
+        console.log("Deu erro na função de controle")
+        controlerAsyncFunc += 1
+        if (controlerAsyncFunc < 2) {
+            console.log("Tentando novamente!")
+            testCongrat(index, coordinates)
+        } else {
+            console.error("Não foi encontrada congratulations e fail, contate ao criador do programa!")
+        }
+
+    }
+}
+
+function controlMaxTune(index, coordinates) {
+    if (index < coordinates.itens.length) {
+        tuneSucess(index, coordinates)
+    } else {
+        for (let i = 0; i < coordinates.itens.length; i++) {
+            if (coordinates.itens[i].nivel < maxTune) {
+                tryTuneItem(index, coordinates)
+                break
+            } else {
+                continue
+            }
+        }
+    }
+}
+
+function tuneSucess(index, coordinates) {
+    coordinates.itens[index].nivel += 1;
+    try {
+        if (coordinates.itens[index].nivel < maxTune) {
+            coordinates.itens[index].durability = 100;
+            console.log(`Seu item esta V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de Durabilidade!`)
+            tryTuneItem(index, coordinates)
+        } else {
+            console.log(`Seu item chegou no ${maxTune} mudando SLOT`)
+            index++
+            tryTuneItem(index, coordinates)
+        }
+    } catch (e) {
+        console.error("Erro dentro do programa, contate ao DEV")
+    }
+}
+
+function tuneFail(index, coordinates) {
+    coordinates.itens[index].durability -= 33
+    if (coordinates.itens[index].durability > 1) {
+        console.log(`Seu item esta V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de Durabilidade!`)
+        tryTuneItem(index, coordinates)
+    } else {
+        console.log(`Seu item esta V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de Durabilidade!`)
+        console.log("Vendendo Item")
+        sellItem(index, coordinates)
+    }
+
+}
+
+async function sellItem(index, coordinates) {
+    try {
+        await mouse.move([new Point(coordinates.main.sellButton[0], coordinates.main.sellButton[1])])
+        await mouse.click(Button.LEFT)
+        await sleep(2000)
+        await mouse.move([new Point(coordinates.itens[index].coordinateScreen[0], coordinates.itens[index].coordinateScreen[1])])
+        await mouse.click(Button.LEFT)
+        await sleep(2000)
+        await buyItem(index, coordinates)
+    } catch (e) {
+        console.log("Erro na função sellItem contate ao DEV!")
+    }
+}
+
+async function buyItem(index, coordinates) {
+    coordinates.itens[index].nivel = 1;
+    coordinates.itens[index].durability = 100;
+    try {
+
+        await mouse.move([new Point(coordinates.main.buyButton[0], coordinates.main.buyButton[1])])
+        await mouse.click(Button.LEFT)
+        //FALTA CAPTURAR A DECISÃO DO JOGADOR! 386 545
+        await mouse.move([new Point(386, 545)])
+        await mouse.click(Button.LEFT)
+        await mouse.move([new Point(coordinates.main.secondBuyButton[0], coordinates.main.secondBuyButton[1])])
+        await mouse.click(Button.LEFT)
+        await sleep(2000)
+        await mouse.move([new Point(coordinates.main.tuneButton[0], coordinates.main.tuneButton[1])])
+        await mouse.click(Button.LEFT)
+        console.log(coordinates.itens[index])
+        await sleep(2000)
+        await tryTuneItem(index, coordinates)
+    } catch (e) {
+        console.error("Erro na função buyItem, contate ao DEV!")
+    }
+}
+
 const maxTune = 3;
 const getResolutionX = screen.width();
 const getResolutionY = screen.height();
-let controlerAsyncFunc = 0;
-let index = 0;
 
 getResolutionX
     .then((width) => {
@@ -77,143 +206,10 @@ getResolutionX
             })
             .then((coordinates) => {
 
-                //DEFINIÇÃO DE FUNÇÕES
-                async function tryTuneItem(index) {
-                    try {
-                        await mouse.move([new Point(coordinates.itens[index].coordinateScreen[0], coordinates.itens[index].coordinateScreen[1])])
-                        await mouse.click(Button.LEFT)
-                        await mouse.move([new Point(coordinates.main.secondTuneButton[0], coordinates.main.secondTuneButton[1])])
-                        await mouse.click(Button.LEFT)
-                        await sleep(5000)
-                        await testCongrat(index)
-
-                    } catch (e) {
-                        console.error(e)
-                    }
-                }
-                async function testCongrat(index) {
-                    try {
-                        await screen.find(imageResource("congrat.png"))
-                        console.log("Achei a imagem Congratulations")
-                        controlMaxTune(index)
-
-                    }
-                    catch (e) {
-                        console.log("Não achei Sucess")
-                        testFail(index)
-                    }
-                }
-
-                async function testFail(index) {
-                    try {
-                        await screen.find(imageResource("fail.png"))
-                        console.log("Achei a imagem Fail")
-                        fail(index)
-
-                    } catch (e) {
-                        console.log("Não achei Fail")
-                    }
-                }
-
-                function fail(index) {
-                    try {
-                        controlerAsyncFunc = 0
-                        tuneFail(index)
-
-                    } catch (e) {
-                        console.log("Não passei pela Função de controle!")
-                        controlerAsyncFunc += 1
-                        if (controlerAsyncFunc < 2) {
-                            testCongrat(index)
-                        } else {
-                            console.error("Não foi encontrada congratulations e fail, contate ao criador do programa!")
-                        }
-                    }
-                }
-                
-                function controlMaxTune(index) {
-                    if (index < coordinates.itens.length) {
-                        tuneSucess(index)
-                    } else {
-                        for (let i = 0; i < coordinates.itens.length; i++) {
-                            if (coordinates.itens[i].nivel == maxTune) {
-                                console.log(coordinates.itens[i])
-                            }
-                        }
-                    }
-                }
-                function tuneSucess(index) {
-                    coordinates.itens[index].nivel += 1;
-                    try {
-                        if (coordinates.itens[index].nivel < maxTune) {
-                            coordinates.itens[index].durability = 100;
-                            console.log(`Seu item esta V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de Durabilidade!`)
-                            tryTuneItem(index)
-                        } else {
-                            console.log(`Seu item chegou no ${maxTune} mudando SLOT`)
-                            index++
-                            tryTuneItem(index)
-                        }
-                    } catch (e) {
-                        console.error("Erro dentro do programa, contate ao DEV")
-                    }
-                }
-                
-                function tuneFail(index) {
-                    coordinates.itens[index].durability -= 33
-                    if (coordinates.itens[index].durability > 1) {
-                        console.log(`Seu item esta V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de Durabilidade!`)
-                        tryTuneItem(index)
-                    } else {
-                        console.log(`Seu item esta V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de Durabilidade!`)
-                        console.log("Vendendo Item")
-                        sellItem(index)
-                    }
-
-                }
-                
-                async function sellItem(index) {
-                    try {
-                        await mouse.move([new Point(coordinates.main.sellButton[0], coordinates.main.sellButton[1])])
-                        await mouse.click(Button.LEFT)
-                        await sleep(1000)
-                        await mouse.move([new Point(coordinates.itens[index].coordinateScreen[0], coordinates.itens[index].coordinateScreen[1])])
-                        await mouse.click(Button.LEFT)
-                        await sleep(2000)
-                        await buyItem(index)
-                    } catch (e) {
-                        console.log("Erro na função sellItem contate ao DEV!")
-                    }
-                }
-                
-                async function buyItem(index) {
-                    coordinates.itens[index].nivel = 1;
-                    coordinates.itens[index].durability = 100;
-                    try {
-
-                        await mouse.move([new Point(coordinates.main.buyButton[0], coordinates.main.buyButton[1])])
-                        await mouse.click(Button.LEFT)
-                        //FALTA CAPTURAR A DECISÃO DO JOGADOR! 386 545
-                        await mouse.move([new Point(386, 545)])
-                        await mouse.click(Button.LEFT)
-                        await mouse.move([new Point(coordinates.main.secondBuyButton[0], coordinates.main.secondBuyButton[1])])
-                        await mouse.click(Button.LEFT)
-                        await mouse.move([new Point(coordinates.main.tuneButton[0], coordinates.main.tuneButton[1])])
-                        await mouse.click(Button.LEFT)
-                        console.log(coordinates.itens[index])
-                        await sleep(2000)
-                        await tryTuneItem(index)
-                    } catch (e) {
-                        console.error("Erro na função buyItem, contate ao DEV!")
-                    }
-                }
-                tryTuneItem(index)
+                tryTuneItem(index, coordinates)
 
             })
             .catch((e) => {
-                console.error(e)
+                console.error("Erro na promise, contate ao DEV!")
             })
     })
-
-
-

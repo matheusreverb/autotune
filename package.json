@@ -4,7 +4,7 @@
     "@nut-tree/template-matcher": "^2.0.0",
     "init": "^0.1.2"
   },
-  "name": "autotunejs",
+  "name": "autotune",
   "version": "1.0.0",
   "main": "index.js",
   "devDependencies": {},
@@ -14,5 +14,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matheusreverb/autotune.git"
+  },
+  "bugs": {
+    "url": "https://github.com/matheusreverb/autotune/issues"
+  },
+  "homepage": "https://github.com/matheusreverb/autotune#readme",
   "description": ""
 }
