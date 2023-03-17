@@ -6,7 +6,7 @@ screen.config.resourceDirectory = `${__dirname}/assets`;
 let controlerAsyncFunc = 0;
 let index = 0;
 
-async function tryTuneItemToV5(index, coordinates) {
+async function tryTuneItem(index, coordinates) {
     try {
         await mouse.move([new Point(coordinates.itens[index].coordinateScreen[0], coordinates.itens[index].coordinateScreen[1])])
         await mouse.click(Button.LEFT)
@@ -55,11 +55,11 @@ function tuneSucess(index, coordinates) {
     coordinates.itens[index].durability = 100;
     if (coordinates.itens[index].nivel < 5 && index < coordinates.itens.length) {
         console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
-        tryTuneItemToV5(index, coordinates)
+        tryTuneItem(index, coordinates)
     } else if (coordinates.itens[index].nivel == 5 && index < coordinates.itens.length) {
         console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
         index++
-        tryTuneItemToV5(index, coordinates)
+        tryTuneItem(index, coordinates)
     } else {
         finallyAllV5(index, coordinates)
     }
@@ -69,7 +69,7 @@ function tuneFail(index, coordinates) {
     coordinates.itens[index].durability -= 33
     if (coordinates.itens[index].durability > 1) {
         console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
-        tryTuneItemToV5(index, coordinates)
+        tryTuneItem(index, coordinates)
     } else {
         console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
         console.log("Vendendo Item")
@@ -108,7 +108,7 @@ async function buyItem(index, coordinates) {
         await mouse.click(Button.LEFT)
         console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
         await sleep(2000)
-        await tryTuneItemToV5(index, coordinates)
+        await tryTuneItem(index, coordinates)
     } catch (e) {
         console.error("Erro na função buyItem, contate ao DEV!")
     }
@@ -202,7 +202,7 @@ getResolutionX
             })
             .then((coordinates) => {
 
-                tryTuneItemToV5(index, coordinates)
+                tryTuneItem(index, coordinates)
             })
             .catch((e) => {
                 console.error("Erro na promise, contate ao DEV!")
