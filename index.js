@@ -4,7 +4,6 @@ require("@nut-tree/template-matcher");
 screen.config.resourceDirectory = `${__dirname}/assets`;
 
 let controlerAsyncFunc = 0;
-let index = 0;
 
 async function tryTuneItem(index, coordinates) {
     try {
@@ -19,12 +18,14 @@ async function tryTuneItem(index, coordinates) {
         console.error("Coordenadas incorretas ou erro no código, contate ao DEV")
     }
 }
+
 async function testCongrat(index, coordinates) {
     try {
         await screen.find(imageResource("congrat.png"))
         console.log("Achei a imagem Congratulations")
         controlerAsyncFunc = 0
         tuneSucess(index, coordinates)
+
     } catch (e) {
         testFail(index, coordinates)
     }
@@ -40,44 +41,46 @@ async function testFail(index, coordinates) {
     } catch (e) {
         console.log("Deu erro na função de controle")
         controlerAsyncFunc += 1
+
         if (controlerAsyncFunc < 2) {
             console.log("Tentando novamente!")
             testCongrat(index, coordinates)
+
         } else {
             console.error("Não foi encontrada congratulations e fail, contate ao criador do programa!")
         }
-
     }
 }
 
 function tuneSucess(index, coordinates) {
     coordinates.itens[index].nivel += 1;
     coordinates.itens[index].durability = 100;
+
     if (coordinates.itens[index].nivel < 5 && index < coordinates.itens.length) {
         console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
         tryTuneItem(index, coordinates)
+
     } else if (coordinates.itens[index].nivel == 5 && index < coordinates.itens.length) {
         console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
         index++
         tryTuneItem(index, coordinates)
+
     } else {
         finallyAllV5(index, coordinates)
     }
 }
-
-
 
 function tuneFail(index, coordinates) {
     coordinates.itens[index].durability -= 33
     if (coordinates.itens[index].durability > 1) {
         console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
         tryTuneItem(index, coordinates)
+
     } else {
         console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
         console.log("Vendendo Item")
         sellItem(index, coordinates)
     }
-
 }
 
 async function sellItem(index, coordinates) {
@@ -111,6 +114,7 @@ async function buyItem(index, coordinates) {
         console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
         await sleep(2000)
         await tryTuneItem(index, coordinates)
+
     } catch (e) {
         console.error("Erro na função buyItem, contate ao DEV!")
     }
@@ -119,6 +123,7 @@ async function buyItem(index, coordinates) {
 function finallyAllV5(index, coordinates) {
     if (maxTune == 5) {
         console.log("Todos os seus itens estão V5, obrigado por usar!")
+
     } else if (maxTune == 6) {
         console.log("Quase lá")
         //tryTuneItemV6() A CONSTRUIR
@@ -128,23 +133,23 @@ function finallyAllV5(index, coordinates) {
         //tryTuneItemV7() A CONSTRUIR
     }
 }
+
+const getResolutionX = screen.width();
+const getResolutionY = screen.height();
+let index = 0;
+
 // FUTURAMENTE, ESTOU ESTUDANDO PARA ISSO!!!
 // const maxTune = document.querySelector()
 // const itemChosenX = document.querySelector()
 // const itemChosenY = document.querySelector()
-
-const getResolutionX = screen.width();
-const getResolutionY = screen.height();
 
 getResolutionX
     .then((width) => {
         getResolutionY
             .then((height) => {
                 return { width, height }
-                //OBTENDO A LARGURA E ALTURA DA TELA
             })
             .then((resolution) => {
-                //DEFINIÇÃO DE COORDENADAS
                 const coordWidth = resolution.width
                 const coordHeight = resolution.height
 
@@ -205,8 +210,9 @@ getResolutionX
             .then((coordinates) => {
 
                 tryTuneItem(index, coordinates)
+
             })
             .catch((e) => {
-                console.error("Erro na promise, contate ao DEV!")
+                console.error("Erro na promise, contate ao DEV! Erro:" + e)
             })
     })
