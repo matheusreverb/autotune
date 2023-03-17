@@ -6,7 +6,7 @@ screen.config.resourceDirectory = `${__dirname}/assets`;
 let controlerAsyncFunc = 0;
 let index = 0;
 
-async function tryTuneItem(index, coordinates) {
+async function tryTuneItemToV5(index, coordinates) {
     try {
         await mouse.move([new Point(coordinates.itens[index].coordinateScreen[0], coordinates.itens[index].coordinateScreen[1])])
         await mouse.click(Button.LEFT)
@@ -24,10 +24,8 @@ async function testCongrat(index, coordinates) {
         await screen.find(imageResource("congrat.png"))
         console.log("Achei a imagem Congratulations")
         controlerAsyncFunc = 0
-        controlMaxTune(index, coordinates)
-
-    }
-    catch (e) {
+        tuneSucess(index, coordinates)
+    } catch (e) {
         testFail(index, coordinates)
     }
 }
@@ -52,45 +50,28 @@ async function testFail(index, coordinates) {
     }
 }
 
-function controlMaxTune(index, coordinates) {
-    if (index < coordinates.itens.length) {
-        tuneSucess(index, coordinates)
-    } else {
-        for (let i = 0; i < coordinates.itens.length; i++) {
-            if (coordinates.itens[i].nivel < maxTune) {
-                tryTuneItem(index, coordinates)
-                break
-            } else {
-                continue
-            }
-        }
-    }
-}
-
 function tuneSucess(index, coordinates) {
     coordinates.itens[index].nivel += 1;
-    try {
-        if (coordinates.itens[index].nivel < maxTune) {
-            coordinates.itens[index].durability = 100;
-            console.log(`Seu item esta V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de Durabilidade!`)
-            tryTuneItem(index, coordinates)
-        } else {
-            console.log(`Seu item chegou no ${maxTune} mudando SLOT`)
-            index++
-            tryTuneItem(index, coordinates)
-        }
-    } catch (e) {
-        console.error("Erro dentro do programa, contate ao DEV")
+    coordinates.itens[index].durability = 100;
+    if (coordinates.itens[index].nivel < 5 && index < coordinates.itens.length) {
+        console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
+        tryTuneItemToV5(index, coordinates)
+    } else if (coordinates.itens[index].nivel == 5 && index < coordinates.itens.length) {
+        console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
+        index++
+        tryTuneItemToV5(index, coordinates)
+    } else {
+        finallyAllV5(index, coordinates)
     }
 }
 
 function tuneFail(index, coordinates) {
     coordinates.itens[index].durability -= 33
     if (coordinates.itens[index].durability > 1) {
-        console.log(`Seu item esta V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de Durabilidade!`)
-        tryTuneItem(index, coordinates)
+        console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
+        tryTuneItemToV5(index, coordinates)
     } else {
-        console.log(`Seu item esta V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de Durabilidade!`)
+        console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
         console.log("Vendendo Item")
         sellItem(index, coordinates)
     }
@@ -115,26 +96,41 @@ async function buyItem(index, coordinates) {
     coordinates.itens[index].nivel = 1;
     coordinates.itens[index].durability = 100;
     try {
-
         await mouse.move([new Point(coordinates.main.buyButton[0], coordinates.main.buyButton[1])])
         await mouse.click(Button.LEFT)
         //FALTA CAPTURAR A DECISÃO DO JOGADOR! 386 545
-        await mouse.move([new Point(386, 545)])
+        await mouse.move([new Point(396, 713)])
         await mouse.click(Button.LEFT)
         await mouse.move([new Point(coordinates.main.secondBuyButton[0], coordinates.main.secondBuyButton[1])])
         await mouse.click(Button.LEFT)
         await sleep(2000)
         await mouse.move([new Point(coordinates.main.tuneButton[0], coordinates.main.tuneButton[1])])
         await mouse.click(Button.LEFT)
-        console.log(coordinates.itens[index])
+        console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
         await sleep(2000)
-        await tryTuneItem(index, coordinates)
+        await tryTuneItemToV5(index, coordinates)
     } catch (e) {
         console.error("Erro na função buyItem, contate ao DEV!")
     }
 }
 
-const maxTune = 3;
+function finallyAllV5(index, coordinates) {
+    if (maxTune == 5) {
+        console.log("Todos os seus itens estão V5, obrigado por usar!")
+    } else if (maxTune == 6) {
+        console.log("Quase lá")
+        //tryTuneItemV6() A CONSTRUIR
+
+    } else if (maxTune == 7) {
+        console.log("Novidades em breve")
+        //tryTuneItemV7() A CONSTRUIR
+    }
+}
+// FUTURAMENTE, ESTOU ESTUDANDO PARA ISSO!!!
+// const maxTune = document.querySelector()
+// const itemChosenX = document.querySelector()
+// const itemChosenY = document.querySelector()
+
 const getResolutionX = screen.width();
 const getResolutionY = screen.height();
 
@@ -156,7 +152,7 @@ getResolutionX
                     secondBuyButton: [coordWidth * 49.12 / 100, coordHeight * 44.91 / 100],
                     tuneButton: [coordWidth * 22.40 / 100, coordHeight * 25.56 / 100],
                     secondTuneButton: [coordWidth * 41.41 / 100, coordHeight * 65.93 / 100],
-                    itemChosen: "A CONSTRUIR"
+                    itemChosen: [itemChosenX, itemChosenY]
                 }
                 const itens = [
                     {
@@ -206,8 +202,7 @@ getResolutionX
             })
             .then((coordinates) => {
 
-                tryTuneItem(index, coordinates)
-
+                tryTuneItemToV5(index, coordinates)
             })
             .catch((e) => {
                 console.error("Erro na promise, contate ao DEV!")
