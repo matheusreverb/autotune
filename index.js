@@ -180,7 +180,7 @@ function finallyAllV5(index, coordinates) {
 
 /*
  * Declaração de constantes e adquirindo a resolução do computador.
- * Com a resolução adquirimos com precisão as coordenadas de cada monitor. para clicar no item.
+ * Com a resolução adquirimos com precisão as coordenadas de cada monitor para clicar no item.
  */
 const getResolutionX = screen.width();
 const getResolutionY = screen.height();
