@@ -7,6 +7,12 @@ let msgItem = `Seu item do Slot${coordinates.itens[index].slot} está V${coordin
 let controlerAsyncFunc = 0;
 let index = 0;
 
+/*
+ * Função de início.
+ * Está função clica no item e em seguida no tune.
+ * @param {index} Recebe o indice do item atual.
+ * @param {coordinates} Recebe acesso a todas as coordenadas.
+ */
 async function tryTuneItem(index, coordinates) {
     try {
         await mouse.move([new Point(coordinates.itens[index].coordinateScreen[0], coordinates.itens[index].coordinateScreen[1])])
@@ -21,6 +27,9 @@ async function tryTuneItem(index, coordinates) {
     }
 }
 
+/*
+ * Esta função executa o teste para saber se o item teve êxito em seu encantamento procurando a imagem "congrat.png". 
+ */
 async function testCongrat(index, coordinates) {
     try {
         await screen.find(imageResource("congrat.png"))
@@ -33,6 +42,10 @@ async function testCongrat(index, coordinates) {
     }
 }
 
+/*
+ * Verifica se ouve êxito na falha do item, caso não tenha encontrado a imagem,
+ * ela irá começar a contar o "controlerAsyncFunc", para não gerar um loop infinito.
+ */
 async function testFail(index, coordinates) {
     try {
         await screen.find(imageResource("fail.png"))
@@ -54,6 +67,13 @@ async function testFail(index, coordinates) {
     }
 }
 
+/*
+ * Caso a função tenha êxito em encontrar a imagem e for congratulations esta função é chamada.
+ * Esta função é responsável por aumentar o nível do item e a durabilidade dele retornar para 100.
+ * É responsável por verificar se o nível do item já alcançou o nível 5, se sim ele irá alterar as coordenadas.
+ * É responsável pela finalização do programa caso todos os itens estejam V5.
+ */
+
 function tuneSucess(index, coordinates) {
     coordinates.itens[index].nivel += 1;
     coordinates.itens[index].durability = 100;
@@ -72,6 +92,13 @@ function tuneSucess(index, coordinates) {
     }
 }
 
+/*
+ * Caso a função tenha êxito em encontrar a imagem e for fail esta função é chamada.
+ * Esta função é responsável por diminuir a durabilidade do item em -33
+ * Ela também testa o item para ver se o mesmo ainda tem uma durabilidade superior a 1.
+ * Se sim, ela mantem o item e tenta tunar novamente, se não, ela irá vender o item.
+ */
+
 function tuneFail(index, coordinates) {
     coordinates.itens[index].durability -= 33
     if (coordinates.itens[index].durability > 1) {
@@ -84,6 +111,12 @@ function tuneFail(index, coordinates) {
         sellItem(index, coordinates)
     }
 }
+
+/*
+ * Esta função é chamada somente quando os itens quebraram, então ela irá vender o item.
+ * (DENTRO DO JOGO) Ela iá clicar em "SELL" e em seguida irá clicar no item quebrado para vender o mesmo.
+ * E irá chamar a função para comprar o item novamente.
+ */
 
 async function sellItem(index, coordinates) {
     try {
@@ -98,6 +131,16 @@ async function sellItem(index, coordinates) {
         console.log("Erro na função sellItem contate ao DEV!")
     }
 }
+
+/*
+ * Esta função é responsável por comprar o item e mantem o programa em recursão, 
+ * até o programa chegar nos requisitos ideais para a finalização.
+ * Ela irá resetar o item para nível 1 e 100 de durabilidade
+ * (DENTRO DO JOGO)Ela irá clicar no botão buy
+ * (DENTRO DO JOGO)Em seguida irá clicar no item que o usuário deseja comprar
+ * (DENTRO DO JOGO)Irá clicar no segundo botão buy que irá aparecer
+ * (DENTRO DO JOGO)Em seguida irá clicar novamente no botão Tune e irá recomeçar todo o programa.
+ */
 
 async function buyItem(index, coordinates) {
     coordinates.itens[index].nivel = 1;
@@ -122,6 +165,9 @@ async function buyItem(index, coordinates) {
     }
 }
 
+/*
+ * Está função é responsável pela finalização do programa, ou continuação dependendo do maxTune que o usuário escolheu.
+ */
 function finallyAllV5(index, coordinates) {
     if (maxTune == 5) {
         console.log("Todos os seus itens estão V5, obrigado por usar!")
@@ -136,6 +182,10 @@ function finallyAllV5(index, coordinates) {
     }
 }
 
+/*
+ * Declaração de constantes e adquirindo a resolução do computador.
+ * Com a resolução adquirimos com precisão as coordenadas de cada monitor. para clicar no item.
+ */
 const getResolutionX = screen.width();
 const getResolutionY = screen.height();
 
@@ -161,7 +211,7 @@ getResolutionX
                     secondBuyButton: [coordWidth * 49.12 / 100, coordHeight * 44.91 / 100],
                     tuneButton: [coordWidth * 22.40 / 100, coordHeight * 25.56 / 100],
                     secondTuneButton: [coordWidth * 41.41 / 100, coordHeight * 65.93 / 100],
-                    itemChosen: [itemChosenX, itemChosenY]
+                    itemChosen: "A CONSTRUIR"
                 }
                 const itens = [
                     {
