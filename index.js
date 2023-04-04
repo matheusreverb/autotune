@@ -3,7 +3,9 @@ require("@nut-tree/template-matcher");
 
 screen.config.resourceDirectory = `${__dirname}/assets`;
 
+let msgItem = `Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`;
 let controlerAsyncFunc = 0;
+let index = 0;
 
 async function tryTuneItem(index, coordinates) {
     try {
@@ -57,11 +59,11 @@ function tuneSucess(index, coordinates) {
     coordinates.itens[index].durability = 100;
 
     if (coordinates.itens[index].nivel < 5 && index < coordinates.itens.length) {
-        console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
+        console.log(msgItem)
         tryTuneItem(index, coordinates)
 
     } else if (coordinates.itens[index].nivel == 5 && index < coordinates.itens.length) {
-        console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
+        console.log(msgItem)
         index++
         tryTuneItem(index, coordinates)
 
@@ -73,11 +75,11 @@ function tuneSucess(index, coordinates) {
 function tuneFail(index, coordinates) {
     coordinates.itens[index].durability -= 33
     if (coordinates.itens[index].durability > 1) {
-        console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
+        console.log(msgItem)
         tryTuneItem(index, coordinates)
 
     } else {
-        console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
+        console.log(msgItem)
         console.log("Vendendo Item")
         sellItem(index, coordinates)
     }
@@ -111,7 +113,7 @@ async function buyItem(index, coordinates) {
         await sleep(2000)
         await mouse.move([new Point(coordinates.main.tuneButton[0], coordinates.main.tuneButton[1])])
         await mouse.click(Button.LEFT)
-        console.log(`Seu item do Slot${coordinates.itens[index].slot} está V${coordinates.itens[index].nivel} com ${coordinates.itens[index].durability} de durabilidade!`)
+        console.log(msgItem)
         await sleep(2000)
         await tryTuneItem(index, coordinates)
 
@@ -136,7 +138,7 @@ function finallyAllV5(index, coordinates) {
 
 const getResolutionX = screen.width();
 const getResolutionY = screen.height();
-let index = 0;
+
 
 // FUTURAMENTE, ESTOU ESTUDANDO PARA ISSO!!!
 // const maxTune = document.querySelector()
