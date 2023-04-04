@@ -73,7 +73,6 @@ async function testFail(index, coordinates) {
  * É responsável por verificar se o nível do item já alcançou o nível 5, se sim ele irá alterar as coordenadas.
  * É responsável pela finalização do programa caso todos os itens estejam V5.
  */
-
 function tuneSucess(index, coordinates) {
     coordinates.itens[index].nivel += 1;
     coordinates.itens[index].durability = 100;
@@ -98,7 +97,6 @@ function tuneSucess(index, coordinates) {
  * Ela também testa o item para ver se o mesmo ainda tem uma durabilidade superior a 1.
  * Se sim, ela mantem o item e tenta tunar novamente, se não, ela irá vender o item.
  */
-
 function tuneFail(index, coordinates) {
     coordinates.itens[index].durability -= 33
     if (coordinates.itens[index].durability > 1) {
@@ -117,7 +115,6 @@ function tuneFail(index, coordinates) {
  * (DENTRO DO JOGO) Ela iá clicar em "SELL" e em seguida irá clicar no item quebrado para vender o mesmo.
  * E irá chamar a função para comprar o item novamente.
  */
-
 async function sellItem(index, coordinates) {
     try {
         await mouse.move([new Point(coordinates.main.sellButton[0], coordinates.main.sellButton[1])])
@@ -141,7 +138,6 @@ async function sellItem(index, coordinates) {
  * (DENTRO DO JOGO)Irá clicar no segundo botão buy que irá aparecer
  * (DENTRO DO JOGO)Em seguida irá clicar novamente no botão Tune e irá recomeçar todo o programa.
  */
-
 async function buyItem(index, coordinates) {
     coordinates.itens[index].nivel = 1;
     coordinates.itens[index].durability = 100;
